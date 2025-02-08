@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<VibeAssemblyPath>..\bin\Debug\netstandard2.0\Vibe.Build.dll</VibeAssemblyPath>
+	</PropertyGroup>
+	<UsingTask TaskName="Vibe.Build.DeleteFolderTask" AssemblyFile="$(VibeAssemblyPath)" />
+	<Target Name="PreCompileCleanup" BeforeTargets="PrepareForBuild">
+		<DeleteFolderTask FolderPath="$(ProjectDir)/Vibe_Generated" />
+	</Target>
+	<UsingTask TaskName="Vibe.Build.CompileCsxTask"
+			   AssemblyFile="$(VibeAssemblyPath)"
+			   >
+	</UsingTask>
+	<Target Name="CompileCsxFiles" BeforeTargets="PrepareForBuild">
+        <CompileCsxTask
+        ProjectDirectory="$(ProjectDir)">
+            <Output TaskParameter="GeneratedSyntaxTrees" ItemName="CsxSyntaxTrees" />
+        </CompileCsxTask>
+		<ItemGroup>
+		  <Compile Include="@(CsxSyntaxTrees)" />
+		</ItemGroup>
+		<Message Text="Resolved Vibe.dll path: $(VibeAssemblyPath)" Importance="high" />
+		<Message Text="Injected CSX SyntaxTrees into the project build." Importance="high" />
+	</Target>
+</Project>
