@@ -18,7 +18,7 @@ Vibe is a revolutionary framework for building modern applications using `.csx` 
 Add Vibe to your project via the .NET CLI:
 
 ```bash
-dotnet add package Vibe.Build --prerelease;
+dotnet add package Vibe.Builder --prerelease;
 dotnet add package Vibe --prerelease;
 ```
 
