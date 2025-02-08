@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	    <PackageId>VibeBuilder</PackageId>
+	    <PackageIcon>VibeRoundIcon.png</PackageIcon>
+	    <Version>8.0.0-preview.3-beta</Version>
+	    <Authors>Matthew Teague</Authors>
+	    <PackageReadmeFile>README.md</PackageReadmeFile>
+	    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	    <Description>Vibe allows you to use .csx files like .jsx files but in c#.</Description>
+	    <PackageTags>Vibe, Maui, Web, Mobile, Desktop, Csx, App, c#</PackageTags>
+		<RepositoryUrl>https://github.com/devmachinist/Vibe</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<IsPackable>true</IsPackable>
+		<GenerateDependencyFile>true</GenerateDependencyFile>
+	    <TargetsForTfmSpecificBuildOutput>
+        $(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
+		</TargetsForTfmSpecificBuildOutput>
+    <!-- This property tells MSBuild where the root folder of the package's build assets should be. Because we are not a library package, we should not pack to 'lib'. Instead, we choose 'tasks' by convention. -->
+		<BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+    <!-- NuGet does validation that libraries in a package are exposed as dependencies, but we _explicitly_ do not want that behavior for MSBuild tasks. They are isolated by design. Therefore we ignore this specific warning. -->
+		<NoWarn>NU5100</NoWarn>
+    <!-- Suppress NuGet warning NU5128. -->
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>	  
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="VibeRoundIcon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.12.6" PrivateAssets="all" ExcludeAssets="Runtime" />
+		<PackageReference Include="System.Text.Json" Version="9.0.1" PrivateAssets="all" />
+	</ItemGroup>
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+		<ItemGroup>
+			<!-- The TargetPath is the path inside the package that the source file will be placed. This is already precomputed in the ReferenceCopyLocalPaths items' DestinationSubPath, so reuse it here. -->
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)" TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+		</ItemGroup>
+	</Target>
+		
+	<Target Name="AddBuildDependencyFileToBuiltProjectOutputGroupOutput" BeforeTargets="BuiltProjectOutputGroup" Condition=" '$(GenerateDependencyFile)' == 'true'">
+	    <ItemGroup>
+			<BuiltProjectOutputGroupOutput Include="$(ProjectDepsFilePath)" TargetPath="$(ProjectDepsFileName)" FinalOutputPath="$(ProjectDepsFilePath)" />
+		</ItemGroup>
+	</Target>		
+	<ItemGroup>
+		<BuiltProjectOutputGroupOutput Include="$(ProjectDepsFilePath)" TargetPath="$(ProjectDepsFileName)" FinalOutputPath="$(ProjectDepsFilePath)" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="build\VibeBuilder.Targets" PackagePath="build\" /> 
+	</ItemGroup>	
+</Project>
